@@ -5,7 +5,7 @@ from ..layers.Shar_Layer import shar_layer
 import math
 from setting.read_setting import config as cfg
 from ..layers.lmpcm.lca_14 import ExpansionContrastModule
-class YOLOHead(nn.Module):
+class MYHead(nn.Module):
     def __init__(
         self,
         num_classes,

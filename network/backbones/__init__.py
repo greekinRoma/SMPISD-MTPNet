@@ -1,1 +1,1 @@
-from .yolox_backnone import *
+from .mybackbone import *

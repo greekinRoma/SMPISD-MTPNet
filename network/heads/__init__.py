@@ -1,1 +1,1 @@
-from .yolox_heads import *
+from .my_heads import *

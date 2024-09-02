@@ -1,5 +1,5 @@
-from network.backbones.yolox_backnone import YOLOPAFPN
-from network.heads.yolox_heads import YOLOHead
+from network.backbones.mybackbone import MYPAFPN
+from network.heads.my_heads import MYHead
 from torch import nn
 from .tools import *
 from setting.read_setting import config
@@ -16,8 +16,8 @@ class Network(nn.Module):
         self.choose_net(name)
     def choose_net(self,name):
         if name == 'yolox_s':
-            self.backbone = YOLOPAFPN(depth=0.33, width=0.5, in_channels=[256, 512, 1024], act='silu')
-            self.myhead = YOLOHead(width=0.5, in_channels=config.in_channels, act='silu',num_classes=1)
+            self.backbone = MYPAFPN(depth=0.33, width=0.5, in_channels=[256, 512, 1024], act='silu')
+            self.myhead = MYHead(width=0.5, in_channels=config.in_channels, act='silu',num_classes=1)
         self.decode=anchor_free
         self.init_net()
         self.myhead.initialize_biases(1e-2)

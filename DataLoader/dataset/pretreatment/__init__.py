@@ -6,7 +6,7 @@ from .lbp import *
 from .canny import *
 from .sobel import *
 from .entropy import *
-from .lmpcm import *
+from .SSE import *
 from .surf import *
 from .lmp import *
 from .lcm import *
@@ -14,7 +14,7 @@ import numpy as np
 def transform(types:list,src:numpy.array):
     gray_img=grayfilter(src)
     names=['mpcm','lbp','canny','sobel','entropy','lmpcm','surf','lmp','lcm']
-    filters=[mpcm,lbp,canny,sobel,entropy,lmpcm,surf,lmp,lcm]
+    filters=[mpcm,lbp,canny,sobel,entropy,SSE,surf,lmp,lcm]
     tmps=[]
     for type in types:
         assert type in names, "{} is not in names".format(type)

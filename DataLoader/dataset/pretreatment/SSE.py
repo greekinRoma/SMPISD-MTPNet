@@ -1,6 +1,6 @@
 import cv2
 import numpy as np
-def lmpcm(src):
+def SSE(src):
     def circ_shift(cen, shift):
         #对特征图进行平移，为了方便计算不同位置的对比度
         hei, wid,_ = cen.shape
