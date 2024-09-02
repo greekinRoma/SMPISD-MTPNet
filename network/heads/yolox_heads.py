@@ -96,22 +96,8 @@ class YOLOHead(nn.Module):
                     padding=0,
                 )
             )
-            self.obj_preds.append(
-                nn.Conv2d(
-                    in_channels=int(256 * width),
-                    out_channels=1,
-                    kernel_size=1,
-                    stride=1,
-                    padding=0,
-                ))
-            self.cls_preds.append(
-                nn.Conv2d(
-                    in_channels=int(256 * width),
-                    out_channels=1,
-                    kernel_size=1,
-                    stride=1,
-                    padding=0,
-                ))
+            self.obj_preds.append(ExpansionContrastModule(in_channels=int(width*256),out=1))
+            self.cls_preds.append(ExpansionContrastModule(in_channels=int(width*256),out=1))
             self.mask_preds.append(
                 nn.Conv2d(
                     in_channels=int(256 * width),

@@ -5,7 +5,7 @@ from setting.read_setting import config as cfg
 from network.network_blocks import BaseConv
 import math
 class ExpansionContrastModule(nn.Module):
-    def __init__(self,in_channels,out,shifts=[1,5]):
+    def __init__(self,in_channels,out):
         super().__init__()
         #The hyper parameters settting
         self.convs_list=nn.ModuleList()
@@ -19,7 +19,7 @@ class ExpansionContrastModule(nn.Module):
         delta=np.concatenate([delta1,delta2],axis=0)
         w1,w2,w3,w4,w5,w6,w7,w8=np.array_split(delta,8)
         self.in_channels = max(in_channels,1)
-        self.shifts=shifts
+        self.shifts=[1,5]
         self.scale=torch.nn.Parameter(torch.zeros(len(self.shifts)))
         self.hidden_channels=max(self.in_channels//8,1)//len(self.shifts)
         #The Process the of extraction of outcome

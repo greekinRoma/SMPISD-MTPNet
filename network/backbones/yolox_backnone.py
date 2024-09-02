@@ -2,7 +2,6 @@ import torch
 import torch.nn as nn
 from .darknet import CSPDarknet
 from ..network_blocks import BaseConv, CSPLayer, DWConv
-from ..layers.cam.cam_improve import ExpansionContrastModule
 class YOLOPAFPN(nn.Module):
     def __init__(
         self,
@@ -69,9 +68,7 @@ class YOLOPAFPN(nn.Module):
             depthwise=depthwise,
             act=act,
         )
-        self.expansioncontrastmodule0 = ExpansionContrastModule(in_channels=int(in_channels[2] * width),out=int(in_channels[2] * width),shifts=[1])
-        self.expansioncontrastmodule1 = ExpansionContrastModule(in_channels=int(in_channels[1] * width),out=int(in_channels[1] * width),shifts=[1])
-        self.expansioncontrastmodule2 = ExpansionContrastModule(in_channels=int(in_channels[0] * width),out=int(in_channels[0] * width),shifts=[1])
+
     def forward(self, input):
         """
         Args:
@@ -84,9 +81,7 @@ class YOLOPAFPN(nn.Module):
         out_features = self.backbone(input)
         features = [out_features[f] for f in self.in_features]
         [x2, x1, x0] = features
-        x0 = self.expansioncontrastmodule0(x0)
-        x1 = self.expansioncontrastmodule1(x1)
-        x2 = self.expansioncontrastmodule2(x2)
+
         fpn_out0 = self.lateral_conv0(x0)  # 1024->512/32
         f_out0 = self.upsample(fpn_out0)  # 512/16
         f_out0 = torch.cat([f_out0, x1], 1)  # 512->1024/16
@@ -97,5 +92,13 @@ class YOLOPAFPN(nn.Module):
         f_out1 = torch.cat([f_out1, x2], 1)  # 256->512/8
         pan_out2 = self.C3_p3(f_out1)  # 512->256/8
 
-        outputs = (pan_out2,)
+        p_out1 = self.bu_conv2(pan_out2)  # 256->256/16
+        p_out1 = torch.cat([p_out1, fpn_out1], 1)  # 256->512/16
+        pan_out1 = self.C3_n3(p_out1)  # 512->512/16
+
+        p_out0 = self.bu_conv1(pan_out1)  # 512->512/32
+        p_out0 = torch.cat([p_out0, fpn_out0], 1)  # 512->1024/32
+        pan_out0 = self.C3_n4(p_out0)  # 1024->1024/32
+
+        outputs = (pan_out2, pan_out1, pan_out0)
         return outputs
