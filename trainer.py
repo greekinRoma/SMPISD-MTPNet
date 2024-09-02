@@ -51,8 +51,6 @@ class Trainer:
             self.before_epoch()
             self.train_in_iter()
             self.after_epoch()
-            if self.epoch>160:
-                break
     def train_in_iter(self):
         for self.iter in range(self.max_iter):
             self.before_iter()
