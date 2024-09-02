@@ -3,8 +3,8 @@ import torch.nn as nn
 from ..network_blocks import BaseConv, DWConv
 from ..layers.Shar_Layer import shar_layer
 import math
-from network.layers.cam.cam_improve import ExpansionContrastModule
-from network.layers.rfe.RFEM import RFEM_2
+from setting.read_setting import config as cfg
+from ..layers.lmpcm.lca_14 import ExpansionContrastModule
 class YOLOHead(nn.Module):
     def __init__(
         self,
@@ -81,7 +81,20 @@ class YOLOHead(nn.Module):
             self.mask_convs.append(
                 nn.Sequential(
                     *[
-                       RFEM_2(channels=int(256*width))
+                        Conv(
+                            in_channels=int(256 * width),
+                            out_channels=int(256 * width),
+                            ksize=3,
+                            stride=1,
+                            act=act,
+                        ),
+                        Conv(
+                            in_channels=int(256 * width),
+                            out_channels=int(256 * width),
+                            ksize=3,
+                            stride=1,
+                            act=act,
+                        ),
                     ]
                 )
             )

@@ -66,7 +66,7 @@ class RFEM_2(nn.Module):
         out3=self.conv3(out2)
         out=torch.concat([out2,out3],dim=1)
         out=self.out_conv(out)
-        out=self.act(out+input)
+        out=self.act(input+out)
         return out
 class RFEM_3(nn.Module):
     def __init__(self,channels,shifts=[1,3,5,9]):
