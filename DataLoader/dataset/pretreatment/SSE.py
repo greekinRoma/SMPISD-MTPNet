@@ -150,12 +150,12 @@ def SSE(src):
         outs = np.mean(s[:, :, :2, :], 2)
         ####################################
         tmps=(np.abs(delta1)+np.abs(delta2)+np.abs(delta3)+np.abs(delta4)+np.abs(delta5)+np.abs(delta6)+np.abs(delta7)+np.abs(delta8))/8.
-        T1, T2, T3, T4, T5, T6, T7, T8,tmp_out = ave_circ_shift(tmps, shift=shift*3)
-        out_mask=tmp_out/(T1+T2+T3+T4+T5+T6+T7+T8+1)
+        T1, T2, T3, T4, T5, T6, T7, T8,_ = ave_circ_shift(tmps, shift=shift*3)
+        out_mask=1/(T1+T2+T3+T4+T5+T6+T7+T8+1)
         outs=outs*out_mask/np.max(out_mask)
         return outs
     tmps=[]
-    for shift in [3,5,7]:
+    for shift in [7]:
         tmps.append(cal_pcm(cen=src,shift=shift))
     tmps=np.stack(tmps,-1)
     dst=np.max(tmps,-1)
