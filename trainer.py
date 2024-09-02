@@ -171,7 +171,7 @@ class Trainer:
         '''
         logger.info("---> start train epoch{}".format(self.epoch + 1))
         self.exp.reset_map()
-        prob=1.-(self.epoch/self.max_epoch)**2
+        prob=1.- 0.25*(self.epoch/self.max_epoch)**2
         self.train_loader.reset_prob(prob)
         self.prefetcher = DataPrefetcher(self.train_loader,
                                          use_cuda=self.use_cuda)
