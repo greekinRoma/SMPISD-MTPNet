@@ -78,7 +78,7 @@ def generate_args(main_dir:str,set_dict:dict,is_read_excel:bool):
     args['shear'] = 2.0
     args['enable_mixup'] = True
     #training setting
-    args['beta'] =  0.2
+    args['beta'] =  0.25
     args['use_valid']=False
     args['root_dir']=os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     args['image_ext'] = '.png'

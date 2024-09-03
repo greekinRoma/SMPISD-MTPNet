@@ -25,6 +25,7 @@ class Trainer:
         # data/dataloader related attr
         self.data_type = torch.float32
         self.input_size = exp.input_size
+        self.soft_finetune_beta = exp.soft_finetune_beta
         self.best_ap = 0
         self.start_epoch=0
         #controller
@@ -169,7 +170,7 @@ class Trainer:
         '''
         logger.info("---> start train epoch{}".format(self.epoch + 1))
         self.exp.reset_map()
-        prob=1.- 0.1*(self.epoch/self.max_epoch)**2
+        prob=1.- self.soft_finetune_beta*(self.epoch/self.max_epoch)**2
         self.train_loader.reset_prob(prob)
         self.prefetcher = DataPrefetcher(self.train_loader,
                                          use_cuda=self.use_cuda)

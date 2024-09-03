@@ -155,7 +155,7 @@ def SSE(src):
         outs=outs*out_mask/np.max(out_mask)
         return outs
     tmps=[]
-    for shift in [7]:
+    for shift in [3,5,7]:
         tmps.append(cal_pcm(cen=src,shift=shift))
     tmps=np.stack(tmps,-1)
     dst=np.max(tmps,-1)

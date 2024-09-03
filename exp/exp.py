@@ -28,6 +28,7 @@ class MyExp(nn.Module):
         self.mosaic_prob = args['mosaic_prob']
         self.mixup_prob = args['mixup_prob']
         # ------------------------------------------------------------------------dataset_controller-------------------------------------------------------------#
+        self.soft_finetune_beta = args['beta']
         self.trainval_source = COCOSource(data_dir=self.data_dir,
                                     mode='trainval',
                                     cache_type=args['cache_type'],
