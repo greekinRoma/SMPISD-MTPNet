@@ -145,19 +145,20 @@ def SSE(src):
         delta6=B6-cen
         delta7=B7-cen
         delta8=B8-cen
-        s = np.stack([delta1*delta5,delta2*delta6,delta3*delta7,delta4*delta8],2)
-        s=np.sort(s,2)
-        outs = np.mean(s[:, :, :2, :], 2)
+        s = np.stack([delta1*delta5,delta2*delta6,delta3*delta7,delta4*delta8],0)
+        s=np.sort(s,0)
+        outs = np.mean(s[:2, :, :,  :], 0)
         ####################################
         tmps=(np.abs(delta1)+np.abs(delta2)+np.abs(delta3)+np.abs(delta4)+np.abs(delta5)+np.abs(delta6)+np.abs(delta7)+np.abs(delta8))/8.
         T1, T2, T3, T4, T5, T6, T7, T8,_ = ave_circ_shift(tmps, shift=shift*3)
-        out_mask=1/(T1+T2+T3+T4+T5+T6+T7+T8+1)
+        Ts = np.stack([T1,T2,T3,T4,T5,T6,T7,T8],0)
+        out_mask=1/(np.min(Ts,0)+1)
         outs=outs*out_mask/np.max(out_mask)
         return outs
     tmps=[]
     for shift in [3,5,7]:
         tmps.append(cal_pcm(cen=src,shift=shift))
-    tmps=np.stack(tmps,-1)
-    dst=np.max(tmps,-1)
+    tmps=np.stack(tmps,0)
+    dst=np.max(tmps,0)
     dst=np.concatenate([dst%256,np.maximum(dst,0)//256],-1)
     return dst
