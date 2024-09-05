@@ -1,9 +1,10 @@
 import cv2
 import numpy as np
 def SSE(src):
-    def circ_shift(cen, shift):
+    
+    def circ_shift(cen, shift,hei,wid):
         #对特征图进行平移，为了方便计算不同位置的对比度
-        hei, wid,_ = cen.shape
+       
         ######## B1 #########
         # old: AD  =>  new: CB
         #      BC  =>       DA
@@ -67,13 +68,12 @@ def SSE(src):
         B8_E = cen[:, :shift,:]          # B8_E is cen's S
         B8 = np.concatenate([B8_W, B8_E], axis=1)
         return B1, B2, B3, B4, B5, B6, B7, B8
-    def ave_circ_shift(cen, shift):
+    def ave_circ_shift(cen, shift,hei,wid):
         #对特征图进行平移，为了方便计算不同位置的对比度
-        hei, wid,_ = cen.shape
         ######## B1 #########
         # old: AD  =>  new: CB
         #      BC  =>       DA
-        cen=cv2.blur(cen,(shift//3,shift//3))
+        cen=cv2.blur(cen,(shift,shift))
         cen=np.expand_dims(cen,-1)
         B1_NW = cen[ shift:, shift:,:]          # B1_NW is cen's SE
         B1_NE = np.zeros_like(cen[ shift:, :shift,:])      # B1_NE is cen's SW
@@ -135,8 +135,8 @@ def SSE(src):
         B8_E = np.zeros_like(cen[:, :shift,:])          # B8_E is cen's S
         B8 = np.concatenate([B8_W, B8_E], axis=1)
         return B1, B2, B3, B4, B5, B6, B7, B8,cen
-    def cal_pcm(cen, shift):
-        B1, B2, B3, B4, B5, B6, B7, B8 = circ_shift(cen, shift=shift)
+    def cal_pcm(cen, shift,wid,hei):
+        B1, B2, B3, B4, B5, B6, B7, B8 = circ_shift(cen, shift=shift,hei=hei,wid=wid)
         delta1=B1-cen
         delta2=B2-cen
         delta3=B3-cen
@@ -150,14 +150,16 @@ def SSE(src):
         outs = np.mean(s[:2, :, :,  :], 0)
         ####################################
         tmps=(np.abs(delta1)+np.abs(delta2)+np.abs(delta3)+np.abs(delta4)+np.abs(delta5)+np.abs(delta6)+np.abs(delta7)+np.abs(delta8))/8.
-        T1, T2, T3, T4, T5, T6, T7, T8,_ = ave_circ_shift(tmps, shift=shift*3)
+        T1, T2, T3, T4, T5, T6, T7, T8,_ = ave_circ_shift(tmps, shift=shift*3,hei=hei,wid=wid)
         Ts = np.stack([T1,T2,T3,T4,T5,T6,T7,T8],0)
-        out_mask=1/(np.min(Ts,0)+1)
+        out_mask=np.min(Ts,0)
+        out_mask= 1/(out_mask+1)
         outs=outs*out_mask/np.max(out_mask)
         return outs
     tmps=[]
+    wid,hei,_ =src.shape
     for shift in [3,5,7]:
-        tmps.append(cal_pcm(cen=src,shift=shift))
+        tmps.append(cal_pcm(cen=src,shift=shift,wid=wid,hei=hei))
     tmps=np.stack(tmps,0)
     dst=np.max(tmps,0)
     dst=np.concatenate([dst%256,np.maximum(dst,0)//256],-1)

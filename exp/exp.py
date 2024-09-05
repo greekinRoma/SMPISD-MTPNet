@@ -7,15 +7,14 @@ import os
 from losses.loss import Loss_Fuction
 from new_evaluator.train_eval import Evaluator
 from utils.Txt_controller import txt_writer
-from DataLoader.dataset.sources.cocosource import COCOSource
 from DataLoader.dataset.traindatasets import TrainDatasets
 from DataLoader.dataset.testdataset import TestDataset
 from DataLoader.dataset.traintransform import TrainTransform
 from DataLoader.dataset.valtransform import ValTransform
 from DataLoader.dataset.dataaugment import AugmentController
-from DataLoader.dataset.sources.masksource import MaskSource
+from DataLoader.dataset.data_cache import DataCache
 class MyExp(nn.Module):
-    def __init__(self,args,save_path):
+    def __init__(self,data_cache:DataCache,args,save_path):
         super(MyExp,self).__init__()
         self.data_dir =args['coco_data_dir']
         self.target_dir=args['target_dir']
@@ -29,18 +28,9 @@ class MyExp(nn.Module):
         self.mixup_prob = args['mixup_prob']
         # ------------------------------------------------------------------------dataset_controller-------------------------------------------------------------#
         self.soft_finetune_beta = args['beta']
-        self.trainval_source = COCOSource(data_dir=self.data_dir,
-                                    mode='trainval',
-                                    cache_type=args['cache_type'],
-                                    cache=args['cache'])
-        self.test_source=COCOSource(data_dir=self.data_dir,
-                                    mode='test',
-                                    cache_type=args['cache_type'],
-                                    cache=args['cache'])
-        self.mask_source=MaskSource(ids=self.trainval_source.send_ids(),
-                                    data_dir=self.data_dir,
-                                    cache_type=args['cache_type'],
-                                    cache=args['cache'])
+        self.trainval_source = data_cache.trainval_source
+        self.test_source = data_cache.test_source
+        self.mask_source= data_cache.mask_source
         #self.mask_source.get_ids()
         self.aug_controller = AugmentController(input_w=args['img_size'][0],
                                            input_h=args['img_size'][1],

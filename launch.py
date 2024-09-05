@@ -6,6 +6,7 @@ import numpy as np
 from setting.read_setting import *
 import gc
 import os
+from DataLoader.dataset.data_cache import *
 def get_save_path(set_dict:dict,save_dir:str):
     save_dir_name=''
     for name,value in set_dict.items():
@@ -13,15 +14,15 @@ def get_save_path(set_dict:dict,save_dir:str):
     save_path=os.path.join(save_dir,save_dir_name)
     os.makedirs(save_path,exist_ok=True)
     return save_path
-def launch():
+def launch(datacache):
     set_dict = read_excel(r'./input.xlsx', 'input')
     args = generate_args('./',set_dict,is_read_excel=True)
     save_pth = get_save_path(set_dict, save_dir=r'save_outcome')
     save_setting(args=args, save_path=save_pth)
-    exp = MyExp(args=args, save_path=save_pth)
+    exp = MyExp(datacache,args=args, save_path=save_pth)
     trainer = Trainer(exp)
     trainer.train()
-    test_exp = TestExp(data_dir=args['coco_data_dir'], save_dir=save_pth, use_tide=False,use_cuda=torch.cuda.is_available())
+    test_exp = TestExp(datacache,data_dir=args['coco_data_dir'], save_dir=save_pth, use_tide=False,use_cuda=torch.cuda.is_available())
     test_exp.load_yolox('./training_save/yolox_s_OTA/best_ckpt.pth')
     save_dir=test_exp.save_pred()
     exp.save_index(save_dir)
@@ -41,8 +42,9 @@ if __name__=='__main__':
         begin_excel(r'input.xlsx', 'input')
         del begin_excel
         gc.collect()
+        datacache = DataCache()
         while (True):
-            launch()
+            launch(datacache=datacache)
     except (Exception, BaseException) as e:
         traceback.print_exc()
         print('traceback.format_exc():\n%s' % traceback.format_exc())

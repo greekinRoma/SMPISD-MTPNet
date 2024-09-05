@@ -12,8 +12,10 @@ from new_evaluator.coco import coco
 from utils import *
 import matplotlib.pyplot as plt
 from setting.read_setting import config as cfg
+from DataLoader.dataset.data_cache import DataCache
 class TestExp():
     def __init__(self,
+                 datacache:DataCache,
                  use_cuda,
                  data_dir,
                  save_dir,
@@ -29,7 +31,7 @@ class TestExp():
         self.use_tide=use_tide
         self.data_dir=data_dir
         mode='test'
-        self.source= COCOSource(data_dir=self.data_dir,mode=mode)
+        self.source= datacache.test_source
         self.test_dataset = TestDataset(base_dataset=self.source,
                                         preproc=ValTransform())
         self.loader = DataLoader(dataset=self.test_dataset,
