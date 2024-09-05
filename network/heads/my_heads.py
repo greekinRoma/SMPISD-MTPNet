@@ -4,7 +4,7 @@ from ..network_blocks import BaseConv, DWConv
 from ..layers.Shar_Layer import shar_layer
 import math
 from setting.read_setting import config as cfg
-from ..layers.lmpcm.lca_14 import ExpansionContrastModule
+from ..layers.lmpcm.gradient_based_module import GradientBasedModule
 class MYHead(nn.Module):
     def __init__(
         self,
@@ -109,8 +109,8 @@ class MYHead(nn.Module):
                     padding=0,
                 )
             )
-            self.obj_preds.append(ExpansionContrastModule(in_channels=int(width*256),out=1))
-            self.cls_preds.append(ExpansionContrastModule(in_channels=int(width*256),out=1))
+            self.obj_preds.append(GradientBasedModule(in_channels=int(width*256),out=1))
+            self.cls_preds.append(GradientBasedModule(in_channels=int(width*256),out=1))
             self.mask_preds.append(
                 nn.Conv2d(
                     in_channels=int(256 * width),

@@ -2,9 +2,8 @@ import torch
 from torch import nn
 import numpy as np
 from setting.read_setting import config as cfg
-from network.network_blocks import BaseConv
 import math
-class ExpansionContrastModule(nn.Module):
+class GradientBasedModule(nn.Module):
     def __init__(self,in_channels,out):
         super().__init__()
         self.convs_list=nn.ModuleList()
