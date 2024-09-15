@@ -130,7 +130,7 @@ class COCOSource(CacheDataset):
         r = min(self.img_size[0] / img.shape[0], self.img_size[1] / img.shape[1])
         resized_img = cv2.resize(img, (int(img.shape[1] * r), int(img.shape[0] * r)),
                                  interpolation=cv2.INTER_LINEAR, ).astype(np.float32)
-        resized_img = transform(types=['lmpcm'], src=resized_img)
+        resized_img = transform(types=['SSE'], src=resized_img)
         return resized_img
     def load_image(self, index):
         file_name = self.annotations[index][3]

@@ -162,5 +162,5 @@ def SSE(src):
         tmps.append(cal_pcm(cen=src,shift=shift,wid=wid,hei=hei))
     tmps=np.stack(tmps,0)
     dst=np.max(tmps,0)
-    dst=np.concatenate([dst%256,np.maximum(dst,0)//256],-1)
-    return dst
+    # dst=np.concatenate([dst%256,np.maximum(dst,0)//256],-1)
+    return dst//256
