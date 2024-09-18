@@ -6,12 +6,14 @@ import cv2
 from tqdm import tqdm
 from network.Network import Network
 from DataLoader.dataset.valtransform import ValTransform
-from DataLoader.dataset.sources.cocosource import COCOSource
+from DataLoader.dataset.sources.test.Tcocosource import TESTCOCOSource
 from DataLoader.dataset.testdataset import TestDataset
 from new_evaluator.coco import coco
 from utils import *
 import matplotlib.pyplot as plt
 from setting.read_setting import config as cfg
+from DataLoader.dataset.sources.test.TSSE import TSSE
+import time
 class TestExp():
     def __init__(self,
                  use_cuda,
@@ -29,7 +31,7 @@ class TestExp():
         self.use_tide=use_tide
         self.data_dir=data_dir
         mode='test'
-        self.source= COCOSource(data_dir=self.data_dir,mode=mode)
+        self.source= TESTCOCOSource(data_dir=self.data_dir,mode=mode)
         self.test_dataset = TestDataset(base_dataset=self.source,
                                         preproc=ValTransform())
         self.loader = DataLoader(dataset=self.test_dataset,
@@ -108,8 +110,13 @@ class TestExp():
         all_boxes =[[]]
         f = open(self.save_txt, 'w')
         ######################################
+        res = []
         for i,(imgs,_,_,targets,names) in enumerate(tqdm(self.loader)):
+            start = time.time()
+            imgs = TSSE(imgs)
             outcomes, scores = self.model_predict(imgs)
+            end = time.time()
+            res.append(end-start)
             self.show_prediction(imgs,outcomes,targets,scores)
             if len(scores)<=0:
                 all_boxes[0].append(np.array([[0,0,0,0,0]]))
@@ -123,6 +130,10 @@ class TestExp():
                 for s, o in zip(score, boxes):
                     f.write("{} {} {} {} {} {}\n".format(name,float(s), o[0], o[1], o[2], o[3]))
         self.coco._write_coco_results_file(all_boxes=all_boxes,res_file=self.save_file)
+        time_sum = 0
+        for i in res:
+            time_sum += i
+        print("FPS: %f"%(1.0/(time_sum/len(res))))
         return self.save_dir
     def tranform_int(self, boxes):
         box_list = []
@@ -181,6 +192,6 @@ if __name__=="__main__":
         data_dir=r'./datasets/SII',
         save_dir=r'./save_outcome',
         use_tide=True)
-    exp.load_yolox(r'./new_evaluator/best_ckpt.pth')
+    exp.load_yolox(r'/home/greek/files/test_platfrom_31/save_weight.pth')
     exp.save_pred()
     exp.compute_ap()

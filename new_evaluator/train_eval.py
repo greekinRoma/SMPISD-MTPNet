@@ -30,7 +30,7 @@ class Evaluator():
         output=outputs[0]
         if output is None:
             return np.array([]),np.array([])
-        return output[..., 0:4].cpu().numpy(),(output[..., 4]*output[..., 5]*output[...,6]).cpu().numpy()
+        return output[..., 0:4].cpu().numpy()*500/640,(output[..., 4]*output[..., 5]*output[...,6]).cpu().numpy()
     def push_model(self,model):
         self.model=model
     def eval(self):

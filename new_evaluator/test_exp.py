@@ -90,7 +90,7 @@ class TestExp():
             for output in outputs:
                 if output is None:
                     return np.array([]), np.array([])
-                bboxes.append(output[..., 0:4])
+                bboxes.append(output[..., 0:4]*500/640)
                 scores.append(output[..., 4] * output[..., 5] * output[..., 6])
         return bboxes, scores
     def show_prediction(self,imgs,outcomes,targets,scores):

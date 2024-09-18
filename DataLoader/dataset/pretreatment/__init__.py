@@ -21,7 +21,7 @@ def transform(types:list,src:numpy.array):
         assert type in names, "{} is not in names".format(type)
         index=names.index(type)
         tmps.append(filters[index](gray_img))
-    rest_num=3-len(tmps)
+    rest_num=2-len(tmps)
     tmps.append(np.repeat(gray_img,rest_num,-1))
     assert rest_num>=0, "the length of types is 3"
     return np.concatenate(tmps,-1)
