@@ -3,6 +3,7 @@ from network.heads.my_heads import MYHead
 from torch import nn
 from .tools import *
 from setting.read_setting import config
+from network.layers.Pre_layer.TSSE import TSSE
 class Network(nn.Module):
     def __init__(self,name='yolox_s',
                  strides=[8,16,32]):
@@ -13,6 +14,7 @@ class Network(nn.Module):
         self.decode=None
         self.grids=None
         self.training=False
+        self.pre_layer = TSSE()
         self.choose_net(name)
     def choose_net(self,name):
         if name == 'yolox_s':
@@ -52,5 +54,18 @@ class Network(nn.Module):
             strides = torch.cat(strides,1)
             regs=torch.cat(regs,1)
             return outputs,grids,strides,regs
+    def test(self,input):
+        input = self.pre_layer(input)
+        fpn_outs=self.backbone(input)
+        dtype=input.type()
+        if self.grids is None:
+            self.grids = init_grids(fpn_outs, self.strides, dtype)
+        outputs=self.myhead(fpn_outs)
+        regs=[]
+        for i, (stride, grid, output) in enumerate(zip(self.strides, self.grids, outputs)):
+            regs.append(output[...,:4].clone())
+            outputs[i] = self.decode(stride, grid, output)
+        outputs = torch.cat(outputs, 1)
+        return outputs
 if __name__=="__main__":
     net=Network('yolox_s')

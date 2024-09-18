@@ -12,7 +12,8 @@ from new_evaluator.coco import coco
 from utils import *
 import matplotlib.pyplot as plt
 from setting.read_setting import config as cfg
-from DataLoader.dataset.sources.test.TSSE import TSSE
+
+from torchstat import stat
 import time
 class TestExp():
     def __init__(self,
@@ -75,7 +76,7 @@ class TestExp():
         self.model.load_state_dict(model['model'], strict=False)
     def model_predict(self, image):
         with torch.no_grad():
-            outputs = self.model(image, False)
+            outputs = self.model.test(image)
             outputs[..., 4] = outputs[..., 4].sigmoid()
             outputs[..., 5] = outputs[..., 5].sigmoid()
             outputs[..., 6] = outputs[..., 6].sigmoid()
@@ -113,7 +114,6 @@ class TestExp():
         res = []
         for i,(imgs,_,_,targets,names) in enumerate(tqdm(self.loader)):
             start = time.time()
-            imgs = TSSE(imgs)
             outcomes, scores = self.model_predict(imgs)
             end = time.time()
             res.append(end-start)
@@ -133,7 +133,8 @@ class TestExp():
         time_sum = 0
         for i in res:
             time_sum += i
-        print("FPS: %f"%(1.0/(time_sum/len(res))))
+        self.names.append("FPS")
+        self.values.append(1.0/(time_sum/len(res)))
         return self.save_dir
     def tranform_int(self, boxes):
         box_list = []

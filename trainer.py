@@ -65,7 +65,7 @@ class Trainer:
         targets.requires_grad = False
         data_end_time = time.time()
         with torch.cuda.amp.autocast(enabled=self.amp_training):
-            image=inps[0].detach().cpu().numpy()
+            # image=inps[0].detach().cpu().numpy()
             # import cv2
             # print(np.max(image[0]))
             # print(np.max(image[1]))
