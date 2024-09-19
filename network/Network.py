@@ -4,6 +4,7 @@ from torch import nn
 from .tools import *
 from setting.read_setting import config
 from network.layers.Pre_layer.TSSE import TSSE
+
 class Network(nn.Module):
     def __init__(self,name='yolox_s',
                  strides=[8,16,32]):
@@ -16,6 +17,7 @@ class Network(nn.Module):
         self.training=False
         self.pre_layer = TSSE()
         self.choose_net(name)
+        self.training = True
     def choose_net(self,name):
         if name == 'yolox_s':
             self.backbone = MYPAFPN(depth=0.33, width=0.5, in_channels=[256, 512, 1024], act='silu')
@@ -32,7 +34,9 @@ class Network(nn.Module):
             if isinstance(m, nn.BatchNorm2d):
                 m.eps = 1e-3
                 m.momentum = 0.03
-    def forward(self,input,training):
+    def forward(self,input,training,use_pre_layer=False):
+        if use_pre_layer:
+            input = self.pre_layer(input)
         fpn_outs=self.backbone(input)
         dtype=input.type()
         if self.grids is None:
@@ -55,6 +59,7 @@ class Network(nn.Module):
             regs=torch.cat(regs,1)
             return outputs,grids,strides,regs
     def test(self,input):
+        self.training =False
         input = self.pre_layer(input)
         fpn_outs=self.backbone(input)
         dtype=input.type()

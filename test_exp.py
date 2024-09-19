@@ -12,8 +12,7 @@ from new_evaluator.coco import coco
 from utils import *
 import matplotlib.pyplot as plt
 from setting.read_setting import config as cfg
-
-from torchstat import stat
+from thop import profile
 import time
 class TestExp():
     def __init__(self,
@@ -135,7 +134,27 @@ class TestExp():
             time_sum += i
         self.names.append("FPS")
         self.values.append(1.0/(time_sum/len(res)))
+        self.get_parameters()
+        self.get_gflops()
         return self.save_dir
+    def get_parameters(self):
+        Total_params = 0
+        Trainable_params = 0
+        NonTrainable_params = 0
+        for param in self.model.parameters():
+            mulValue = np.prod(param.size())  # 使用numpy prod接口计算参数数组所有元素之积
+            Total_params += mulValue  # 总参数量
+            if param.requires_grad:
+                Trainable_params += mulValue  # 可训练参数量
+            else:
+                NonTrainable_params += mulValue  # 非可训练参数量
+        self.names.append("params")
+        self.values.append(Total_params / 1e6)
+    def get_gflops(self):
+        inputs = torch.rand([1,3,640,640]).cuda()
+        flops, params = profile(self.model, inputs=(inputs,False,True))
+        self.names.append("gflops")
+        self.values.append(flops / 1e9 * 2)
     def tranform_int(self, boxes):
         box_list = []
         for box in boxes:
@@ -178,6 +197,8 @@ class TestExp():
         self.write_excel(sheet_name="coco",names=names,values=values)
     def write_excel(self,sheet_name,names,values):
         sheet=self.f.add_sheet(sheet_name,True)
+        names = names + self.names
+        values = values + self.values
         for i,(name,value) in enumerate(zip(names,values)):
             sheet.write(0,i,name)
             sheet.write(1,i,value)
