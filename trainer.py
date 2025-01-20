@@ -145,9 +145,9 @@ class Trainer:
         model=self.exp.get_model()
         try:
             if self.use_cuda:
-                net=torch.load('./yolox_s.pth', map_location=torch.device('cuda'))["model"]
+                net=torch.load('./pretraining.pth', map_location=torch.device('cuda'))["model"]
             else:
-                net = torch.load('yolox_s.pth', map_location=torch.device('cpu'))["model"]
+                net = torch.load('pretraining.pth', map_location=torch.device('cpu'))["model"]
             model=load_ckpt(model,net)
         except (Exception,BaseException) as e:
             traceback.print_exc()

@@ -63,12 +63,12 @@ class TestExp():
         if not os.path.isdir(dir):
             os.mkdir(dir)
         return dir
-    def load_yolox(self,pth_path=None):
+    def load_network(self,pth_path=None):
         if self.use_cuda:
-            self.model = Network('yolox_s').cuda()
+            self.model = Network('ournetwork').cuda()
             model = torch.load(pth_path, map_location=torch.device('cuda'))
         else:
-            self.model=Network('yolox_s')
+            self.model=Network('ournetwork')
             model = torch.load(pth_path, map_location=torch.device('cpu'))
         torch.save(model,os.path.join(self.save_dir,'save_weight.pth'))
         self.model.eval()
@@ -92,6 +92,7 @@ class TestExp():
                     return np.array([]), np.array([])
                 bboxes.append(output[..., 0:4])
                 scores.append(output[..., 4] * output[..., 5] * output[..., 6])
+        print(bboxes)
         return bboxes, scores
     def show_prediction(self,imgs,outcomes,targets,scores):
         for img_g,outcome,target,score in zip(imgs,outcomes,targets,scores):
@@ -125,6 +126,7 @@ class TestExp():
                 score=torch.reshape(score,[-1,1])
                 boxes=outcome
                 det=np.concatenate([score,boxes],-1)
+                print(det)
                 all_boxes[0].append(det)
                 for s, o in zip(score, boxes):
                     f.write("{} {} {} {} {} {}\n".format(name,float(s), o[0], o[1], o[2], o[3]))
@@ -214,6 +216,6 @@ if __name__=="__main__":
         data_dir=r'./datasets/SII',
         save_dir=r'./save_outcome',
         use_tide=True)
-    exp.load_yolox(r'/home/greek/files/test_platfrom_31/save_weight.pth')
+    exp.load_network(r'/home/greek/files/test_platfrom_31/save_weight.pth')
     exp.save_pred()
     exp.compute_ap()

@@ -6,7 +6,7 @@ from setting.read_setting import config
 from network.layers.Pre_layer.TSSE import TSSE
 
 class Network(nn.Module):
-    def __init__(self,name='yolox_s',
+    def __init__(self,name='ournetwork',
                  strides=[8,16,32]):
         super().__init__()
         self.strides=config.strides
@@ -19,7 +19,7 @@ class Network(nn.Module):
         self.choose_net(name)
         self.training = True
     def choose_net(self,name):
-        if name == 'yolox_s':
+        if name == 'ournetwork':
             self.backbone = MYPAFPN(depth=0.33, width=0.5, in_channels=[256, 512, 1024], act='silu')
             self.myhead = MYHead(width=0.5, in_channels=config.in_channels, act='silu',num_classes=1)
         self.decode=anchor_free
