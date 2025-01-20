@@ -1,5 +1,3 @@
-requirements.txt
-
 # SMPISD-MTPNet: Scene Semantic Prior-Assisted Infrared Ship Detection Using Multi-Task Perception Networks
 
 ## **[IEEE TGRS] Implementation of our paper "SMPISD-MTPNet: Scene Semantic Prior-Assisted Infrared Ship Detection Using Multi-Task Perception Networks". [paper](https://ieeexplore.ieee.org/abstract/document/10802996)**
@@ -17,9 +15,9 @@ The code is hchc
 
 ## Pretraining Weights
 
-Our weights is here: https://pan.baidu.com/s/1Bxkf9LQLc_94E_tMS-iftg?pwd=xt4z
+Our weights is here: https://pan.baidu.com/s/1tXpmKDyMTyMysqC3TaP8_w?pwd=ymsb
 
-The code is xt4z
+The code is ymsb
 
 ## Commands for Training
 
