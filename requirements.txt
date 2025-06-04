@@ -9,7 +9,6 @@ cloudpickle==3.0.0
 colorama==0.4.6
 comm==0.1.4
 contextlib2==21.6.0
-cvpods==0.1
 cycler==0.11.0
 cython==3.0.6
 cython-bbox==0.1.5
